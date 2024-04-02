@@ -1,0 +1,26 @@
+include: "rules/common.smk"
+
+
+##### Target rules #####
+
+
+rule all:
+    input:
+        # "results/annotated/all.vcf.gz",
+        "report/multiqc.html",
+        "results/genotyped/all.vcf.gz"
+        "results/filtered/all.vcf.gz",
+        # "results/plots/depths.svg",
+        # "results/plots/allele-freqs.svg",
+
+
+##### Modules #####
+
+
+# include: "rules/ref.smk"
+include: "rules/mapping.smk"
+include: "rules/calling.smk"
+include: "rules/filtering.smk"
+# include: "rules/stats.smk"
+include: "rules/qc.smk"
+# include: "rules/annotation.smk"

@@ -1,0 +1,60 @@
+samples: config/samples.csv
+
+fastq:
+    pe: true # pair end
+    platform: ILLUMINA
+    omics: WGS
+
+genome:
+    ref: /home/shpc_101794/DataHub/Genomics/GATK/Homo_sapiens_assembly38.fasta
+    fai: /home/shpc_101794/DataHub/Genomics/GATK/Homo_sapiens_assembly38.fasta.fai
+    gff: ""
+    gff_idx: ""
+    dict: /home/shpc_101794/DataHub/Genomics/GATK/Homo_sapiens_assembly38.dict
+    mills: /home/shpc_101794/DataHub/Genomics/GATK/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
+    mills_idx: /home/shpc_101794/DataHub/Genomics/GATK/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi
+    omni: /home/shpc_101794/DataHub/Genomics/GATK/1000G_omni2.5.hg38.vcf.gz
+    omni_idx: /home/shpc_101794/DataHub/Genomics/GATK/1000G_omni2.5.hg38.vcf.gz.tbi,
+    g1k: /home/shpc_101794/DataHub/Genomics/GATK/1000G_phase1.snps.high_confidence.hg38.vcf.gz
+    g1k_idx: /home/shpc_101794/DataHub/Genomics/GATK/1000G_phase1.snps.high_confidence.hg38.vcf.gz.tbi
+    dbsnp: /home/shpc_101794/DataHub/Genomics/GATK/Homo_sapiens_assembly38.dbsnp138.vcf
+    dbsnp_idx: /home/shpc_101794/DataHub/Genomics/GATK/Homo_sapiens_assembly38.dbsnp138.vcf.idx
+
+warpper_mirror: https://jihulab.com/BioQuest/snakemake-wrappers/raw/v1.26.0/
+
+filtering:
+    # Set to true in order to apply machine learning based recalibration of
+    # quality scores instead of hard filtering.
+    vqsr: true
+    hard:
+        # hard filtering as outlined in GATK docs
+        # (https://gatkforums.broadinstitute.org/gatk/discussion/2806/howto-apply-hard-filters-to-a-call-set)
+        snvs:
+            "QD < 2.0 || FS > 60.0 || MQ < 40.0 || MQRankSum < -12.5 || ReadPosRankSum < -8.0"
+        indels:
+            "QD < 2.0 || FS > 200.0 || ReadPosRankSum < -20.0"
+
+processing:
+    remove-duplicates: true
+    # Uncomment and point to a bed file with, e.g., captured regions if necessary,
+    # see https://gatkforums.broadinstitute.org/gatk/discussion/4133/when-should-i-use-l-to-pass-in-a-list-of-intervals.
+    # restrict-regions: captured_regions.bed
+    # If regions are restricted, uncomment this to enlarge them by the given value in order to include
+    # flanking areas.
+    # region-padding: 100
+
+params:
+    gatk:
+        HaplotypeCaller: ""
+        BaseRecalibrator: ""
+        GenotypeGVCFs: ""
+        VariantRecalibrator: ""
+    picard:
+        MarkDuplicates: "REMOVE_DUPLICATES=true"
+    vep:
+        plugins:
+            # Add any plugin from https://www.ensembl.org/info/docs/tools/vep/script/vep_plugins.html
+            # Plugin args can be passed as well, e.g. "LoFtool,path/to/custom/scores.txt".
+            - LoFtool
+        # extra command line arguments (e.g. --sift, see docs)
+        extra: ""
